@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Discord.Commands;
 
-namespace TeamBuilderbot
+namespace TeamBuilderbot.Commands
 {
     public class ChannelCleaner
     {
@@ -21,7 +21,12 @@ namespace TeamBuilderbot
                 x.Name != null && x.Name.StartsWith($"{_settings.TeamBuilderChannelPrefix}")
             ).ToList();
             var users = teamBuilderChannels.SelectMany(x => x.Users);
-            var moveTasks = users.Select(x => x.ModifyAsync(userProps => userProps.ChannelId = _settings.RedirectChannel));
+            var moveTasks = users.Select(x =>
+            {
+                if (x.VoiceChannel.Id != _settings.RedirectChannel)
+                    return x.ModifyAsync(userProps => userProps.ChannelId = _settings.RedirectChannel);
+                return Task.CompletedTask;
+            });
             await Task.WhenAll(moveTasks);
             var deleteTasks = teamBuilderChannels.Select(x => x.DeleteAsync()).ToArray();
             await Task.WhenAll(deleteTasks);

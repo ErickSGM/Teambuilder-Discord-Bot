@@ -6,6 +6,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using TeamBuilderbot.Models;
 
 namespace TeamBuilderbot
 {
@@ -31,6 +32,7 @@ namespace TeamBuilderbot
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
                 .AddSingleton(settings)
+                .AddSingleton(new CurrentGames())
                 .BuildServiceProvider();
             await InstallCommandsAsync();
             
