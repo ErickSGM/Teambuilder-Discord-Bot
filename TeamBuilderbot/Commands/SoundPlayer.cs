@@ -9,9 +9,9 @@ namespace TeamBuilderbot.Commands
     {
         public async Task PlayStartSound(IAudioClient audioClient)
         {
-            var countdownSound = new Random().Next(1, 7).ToString().PadLeft(3, '0');
-            await SendCountDownAsync(audioClient, countdownSound);
-            await SendCountDownAsync(audioClient, "start");
+            var preCountdownSound = new Random().Next(1, 7).ToString().PadLeft(3, '0');
+            await ExecuteSound(audioClient, preCountdownSound);
+            await ExecuteSound(audioClient, "start");
         }
 
         private Process CreateStream(string path)
@@ -26,7 +26,7 @@ namespace TeamBuilderbot.Commands
             return Process.Start(ffmpeg);
         }
 
-        private async Task SendCountDownAsync(IAudioClient client, string path)
+        private async Task ExecuteSound(IAudioClient client, string path)
         {
             // Create FFmpeg using the previous example
             var ffmpeg = CreateStream(path);

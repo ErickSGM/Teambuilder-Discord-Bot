@@ -21,15 +21,14 @@ namespace TeamBuilderbot.Commands
 
         public async Task<(string, Game)> BuildTeams(int teamSize, string gameName)
         {
-            var currentChannel = (_context.User as SocketGuildUser)?.VoiceChannel;
+            var invokedCommandChannel = (_context.User as SocketGuildUser)?.VoiceChannel;
             var users =
-                currentChannel
+                invokedCommandChannel
                     .Users
-                    .Where(x => 
-                        !x.IsBot && 
-                        x.Status == UserStatus.Online && 
-                        !x.IsSelfMuted && 
-                        x.VoiceChannel.Name == currentChannel.Name )
+                    .Where(user => 
+                        !user.IsBot && 
+                        !user.IsSelfMuted && 
+                        user.VoiceChannel.Name == invokedCommandChannel.Name )
                     .ToList();
             var teams = CalculateTeams(teamSize, users);
             var output = teams.Select(BuildTeamText);
@@ -39,7 +38,8 @@ namespace TeamBuilderbot.Commands
 
         private static List<Team> CalculateTeams(int teamSize, List<SocketGuildUser> users)
         {
-            var totalTeams = Math.Ceiling((double) users.Count / teamSize);
+            var totalUsers = users.Count;
+            var totalTeams = Math.Ceiling((double) totalUsers / teamSize);
             var random = new Random();
             var teams = new List<Team>();
             for (int teamNumber = 0; teamNumber < totalTeams; teamNumber++)
@@ -57,9 +57,9 @@ namespace TeamBuilderbot.Commands
             return teams;
         }
 
-        private static string BuildTeamText(Team team, int i)
+        private static string BuildTeamText(Team team, int index)
         {
-            return $"Team {i + 1}: \n \t {string.Join("\n \t", BuildUsersText(team.Players))}";
+            return $"Team {index + 1}: \n \t {string.Join("\n \t", BuildUsersText(team.Players))}";
         }
 
         private static IEnumerable<string> BuildUsersText(List<SocketUser> team)

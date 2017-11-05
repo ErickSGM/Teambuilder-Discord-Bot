@@ -21,10 +21,10 @@ namespace TeamBuilderbot.Commands
                 x.Name != null && x.Name.StartsWith($"{_settings.TeamBuilderChannelPrefix}")
             ).ToList();
             var users = teamBuilderChannels.SelectMany(x => x.Users);
-            var moveTasks = users.Select(x =>
+            var moveTasks = users.Select(user =>
             {
-                if (x.VoiceChannel.Id != _settings.RedirectChannel)
-                    return x.ModifyAsync(userProps => userProps.ChannelId = _settings.RedirectChannel);
+                if (user.VoiceChannel.Id != _settings.RedirectChannel)
+                    return user.ModifyAsync(userProps => userProps.ChannelId = _settings.RedirectChannel);
                 return Task.CompletedTask;
             });
             await Task.WhenAll(moveTasks);

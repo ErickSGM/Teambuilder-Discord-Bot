@@ -68,6 +68,7 @@ namespace TeamBuilderbot
             var context = new SocketCommandContext(_client, message);
             // Execute the command. (result does not indicate a return value, 
             // rather an object stating if the command executed successfully)
+            await (message.Channel as SocketTextChannel).DeleteMessagesAsync(new[] { message });
             var result = await _commands.ExecuteAsync(context, argPos, _services);
             if (!result.IsSuccess)
                 await context.Channel.SendMessageAsync(result.ErrorReason);
