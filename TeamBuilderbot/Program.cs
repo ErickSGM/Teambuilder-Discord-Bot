@@ -1,7 +1,9 @@
 ﻿using Discord;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
+using Discord.Audio;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
@@ -35,7 +37,7 @@ namespace TeamBuilderbot
                 .AddSingleton(new CurrentGames())
                 .BuildServiceProvider();
             await InstallCommandsAsync();
-            
+
             _client.Log += Log;
 
             await _client.LoginAsync(TokenType.Bot, settings.Token);

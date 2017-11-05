@@ -1,4 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using Discord;
+using Discord.Audio;
 using Discord.Commands;
 using TeamBuilderbot.Commands;
 using TeamBuilderbot.Models;
@@ -9,11 +13,13 @@ namespace TeamBuilderbot
     {
         private readonly Settings _settings;
         private readonly CurrentGames _currentGames;
+        private readonly SoundPlayer _soundPlayer;
 
         public CommandController(Settings settings, CurrentGames currentGames)
         {
             _settings = settings;
             _currentGames = currentGames;
+            _soundPlayer = new SoundPlayer();
         }
         [Command("clean")]
         [Summary("Cleans all teambuilder channels.")]
@@ -35,16 +41,19 @@ namespace TeamBuilderbot
             await ReplyAsync(output);
         }
 
-        [Command("start")]
+        [Command("start", RunMode = RunMode.Async)]
         [Summary("Start Countdown.")]
         public async Task Start([Summary("ChannelPrefix")] string gameInput = null)
         {
+            await ReplyAsync("Starting...");
+            var channel = (Context.User as IGuildUser)?.VoiceChannel;
+            var audioClient = await channel.ConnectAsync();
+            await _soundPlayer.PlayStartSound(audioClient);
+
             var channelCleaner = new ChannelCleaner(Context, _settings);
             var gameStarter = new GameStarter(channelCleaner, _settings, Context);
-            await ReplyAsync("Starting...");
             var gameName = gameInput ?? _settings.DefaultGame;
             await gameStarter.Start(_currentGames.Games[gameName]);
-            
         }
     }
 }
