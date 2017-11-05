@@ -50,8 +50,7 @@ namespace TeamBuilderbot
             var audioClient = await channel.ConnectAsync();
             await _soundPlayer.PlayStartSound(audioClient);
 
-            var channelCleaner = new ChannelCleaner(Context, _settings);
-            var gameStarter = new GameStarter(channelCleaner, _settings, Context);
+            var gameStarter = new GameStarter(_settings, Context);
             var gameName = gameInput ?? _settings.DefaultGame;
             await gameStarter.Start(_currentGames.Games[gameName]);
         }
